@@ -13,9 +13,17 @@ namespace SwitchParser
 {
     class Parser
     {
-           public void HTMLcreator(JArray exchangeList)
+        public void HTMLcreator(JArray exchangeList)
         {
+            foreach (JObject disassemb0 in exchangeList)
+            {
+                foreach (JObject disassemb1 in disassemb0["Models"])
+                {
 
+
+                }
+                break;
+            }
         }
     }
 }
