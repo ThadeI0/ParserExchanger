@@ -13,17 +13,32 @@ namespace SwitchParser
 {
     class Parser
     {
+        public string DownloadHTML(string url)
+        {
+            var webClient = new WebClient();
+            string HTML = webClient.DownloadString(url);
+            return HTML;
+        }
+
         public void HTMLcreator(JArray exchangeList)
         {
             foreach (JObject disassemb0 in exchangeList)
             {
+
                 foreach (JObject disassemb1 in disassemb0["Models"])
                 {
 
-
+                    string path = @"..\..\..\data\" + disassemb1["Model"] + ".html";
+                    if (!File.Exists((path)))
+                    {
+                        File.Create(path);
+                        File.AppendAllText(path, DownloadHTML(disassemb1["Url"].ToString()));
+                    }
                 }
                 break;
             }
         }
+
+        
     }
 }
