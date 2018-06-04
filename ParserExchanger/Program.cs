@@ -17,7 +17,8 @@ namespace ParserExchanger
             connector.MarkdownDeserializer();
 
             switchParser.HTMLcreator(connector.exchangeList);
-            
+            connector.MarkdownSerializer();
+            connector.YoutrackConnectPost();
             Console.WriteLine("Hello World!");
         }
     }

@@ -13,6 +13,7 @@ namespace YouTrackHubExchanger
         private JObject bufferBody = new JObject();
         private JToken widgetID;
         public dynamic exchangeList = new JArray();
+        private dynamic exchangeListIn;
         private string jsonInput;
         private JObject jInput; 
         private RestClient client;
@@ -73,9 +74,15 @@ namespace YouTrackHubExchanger
                 products.Add("Models", modelList);
                 exchangeList.Add(products);
             }
+            exchangeListIn = exchangeList;
             Console.WriteLine("Markdown deserialized: done");
         }
-
+        //
+        public void ExchangeCompare()
+        {
+            JObject.EqualityComparer.Equals(exchangeList, exchangeListIn);
+        }
+        //
         public void MarkdownSerializer()
         {
             StringBuilder markdownContent = new StringBuilder();
