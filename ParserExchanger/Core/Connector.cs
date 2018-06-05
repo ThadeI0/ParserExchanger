@@ -35,11 +35,14 @@ namespace YouTrackHubExchanger
             return lineA;
         }
 
-        public string[] ReadHTMLFILE(string model)
+        public string ReadHTMLFILE(string model)
         {
             try
             {
-                return File.ReadAllLines(@"..\..\..\data\" + Linemodel(model) + ".html"); 
+                StreamReader file = new StreamReader(@"..\..\..\data\" + Linemodel(model) + ".html");
+                string HTML = file.ReadToEnd(); 
+                
+                return HTML; 
             }
             catch (FileNotFoundException e)
             {
@@ -47,6 +50,13 @@ namespace YouTrackHubExchanger
                 return null;
 
             }
+        }
+
+        public void CreateHTMLFILE(string HTML, string path)
+        {
+            StreamWriter file = new StreamWriter(path);
+            file.WriteLine(HTML);
+            file.Close();
         }
 
         public string DownloadHTML(string url)
@@ -121,8 +131,8 @@ namespace YouTrackHubExchanger
                     string path = @"..\..\..\data\" + Linemodel(m2.Groups["model"].ToString()) + ".html";
                     if (!File.Exists((path)))
                     {
-                        File.Create(path);
-                        File.AppendAllText(path, DownloadHTML(m2.Groups["url"].ToString()));
+                        CreateHTMLFILE(DownloadHTML(m2.Groups["url"].ToString()), path);
+                        
                     }
                     var htmlText = ReadHTMLFILE(m2.Groups["model"].ToString());
 
@@ -176,7 +186,7 @@ namespace YouTrackHubExchanger
                 if (!(disassemb0 == exchangeListout.Last)) markdownContent.AppendLine();
                 
             }
-            //markdownContent.AppendLine("Здесь был Жура"); - проверка работоспособности post запроса убрать в релизе
+            //markdownContent.Append("Здесь был Жура");// - проверка работоспособности post запроса убрать в релизе
             widgetID = markdownContent.ToString();
             Console.WriteLine("Markdown serialized: done");
         }
