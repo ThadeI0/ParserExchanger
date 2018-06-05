@@ -1,10 +1,14 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using RestSharp;
 using RestSharp.Authenticators;
+using AngleSharp.Extensions;
+using AngleSharp.Parser.Html;
 using Newtonsoft.Json.Linq;
+
 
 namespace YouTrackHubExchanger
 {
@@ -13,10 +17,44 @@ namespace YouTrackHubExchanger
         private JObject bufferBody = new JObject();
         private JToken widgetID;
         public dynamic exchangeList = new JArray();
-        private dynamic exchangeListIn;
+        private dynamic exchangeListout = new JArray();
         private string jsonInput;
         private JObject jInput; 
         private RestClient client;
+
+        public string Linemodel(string line)
+        {
+            string lineA = line.Replace('\\', '_').Replace('/', '_');
+            return lineA;
+        }
+
+        public string Lineurl(string line)
+        {
+            string lineA = line.Remove(0, line.IndexOf(' ') + 1);
+
+            return lineA;
+        }
+
+        public string[] ReadHTMLFILE(string model)
+        {
+            try
+            {
+                return File.ReadAllLines(@"..\..\..\data\" + Linemodel(model) + ".html"); 
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.Write(e);
+                return null;
+
+            }
+        }
+
+        public string DownloadHTML(string url)
+        {
+            var webClient = new WebClient();
+            string HTML = webClient.DownloadString(url);
+            return HTML;
+        }
 
         public void YouTrackRestParams()
         {
@@ -51,7 +89,8 @@ namespace YouTrackHubExchanger
         public void MarkdownDeserializer()
         {
             
-            dynamic tempProduct = null; 
+            dynamic tempProduct = null;
+            dynamic tempProduct2 = null;
             string widgetMessage = widgetID.ToString(); //
             Regex regex = new Regex(@"### (?<vendor>\w+)\n\n(?<models>(?:^\+.*$\n?)+)", RegexOptions.Multiline);
             MatchCollection matches = regex.Matches(widgetMessage);
@@ -59,9 +98,16 @@ namespace YouTrackHubExchanger
 
             foreach (Match m in matches)
             {
+                //output
+                dynamic products2 = new JObject();
+                dynamic modelList2 = new JArray();
+                //
+
                 dynamic products = new JObject();
                 dynamic modelList = new JArray();
+
                 products.Add("Vendor", m.Groups["vendor"].Value);
+                products2.Add("Vendor", m.Groups["vendor"].Value);
                 MatchCollection matches2 = regex2.Matches(m.Groups["models"].Value);
                 foreach (Match m2 in matches2)
                 {
@@ -70,23 +116,54 @@ namespace YouTrackHubExchanger
                     tempProduct.Url = m2.Groups["url"].ToString();
                     tempProduct.FW = m2.Groups["fw"].ToString();
                     modelList.Add(tempProduct);
+
+
+                    string path = @"..\..\..\data\" + Linemodel(m2.Groups["model"].ToString()) + ".html";
+                    if (!File.Exists((path)))
+                    {
+                        File.Create(path);
+                        File.AppendAllText(path, DownloadHTML(m2.Groups["url"].ToString()));
+                    }
+                    var htmlText = ReadHTMLFILE(m2.Groups["model"].ToString());
+
+
+                    var parser = new HtmlParser();
+                    var document = parser.Parse(htmlText.ToString());
+                    var SelAlla = document.QuerySelectorAll("a[href*='Firmware']");
+                    tempProduct2 = new JObject();
+                    tempProduct2.Model = m2.Groups["model"].ToString();
+
+                    foreach (var item in SelAlla)
+                    {
+                        tempProduct2.Url = item.GetAttribute("href");
+                        tempProduct2.FW = item.Text();
+
+                        break;
+                    }
+
+                    
+                    
+                    
+                    modelList2.Add(tempProduct);
                 }
                 products.Add("Models", modelList);
                 exchangeList.Add(products);
+                products2.Add("Models", modelList);
+                exchangeListout.Add(products);
             }
-            exchangeListIn = exchangeList;
+            
             Console.WriteLine("Markdown deserialized: done");
         }
         //
         public void ExchangeCompare()
         {
-            JObject.EqualityComparer.Equals(exchangeList, exchangeListIn);
+            JObject.EqualityComparer.Equals(exchangeList, exchangeListout);
         }
         //
         public void MarkdownSerializer()
         {
             StringBuilder markdownContent = new StringBuilder();
-            foreach (JObject disassemb0 in exchangeList)
+            foreach (JObject disassemb0 in exchangeListout)
             {
                 markdownContent.AppendLine("### " + disassemb0["Vendor"] + "\n");
                 foreach (JObject disassemb1 in disassemb0["Models"])
@@ -94,9 +171,9 @@ namespace YouTrackHubExchanger
                     markdownContent.Append(string.Format(@"+ [{0}]({1})", disassemb1["Model"], disassemb1["Url"]));
                     if (disassemb1["FW"].ToString() != "") markdownContent.AppendLine(@" - " + disassemb1["FW"]);
                     else if (!(disassemb1 == disassemb0["Models"].Last)) markdownContent.AppendLine();
-                    if ((disassemb1 == disassemb0["Models"].Last) && (!(disassemb0 == exchangeList.Last))) markdownContent.AppendLine();     
+                    if ((disassemb1 == disassemb0["Models"].Last) && (!(disassemb0 == exchangeListout.Last))) markdownContent.AppendLine();     
                 }
-                if (!(disassemb0 == exchangeList.Last)) markdownContent.AppendLine();
+                if (!(disassemb0 == exchangeListout.Last)) markdownContent.AppendLine();
                 
             }
             //markdownContent.AppendLine("Здесь был Жура"); - проверка работоспособности post запроса убрать в релизе
