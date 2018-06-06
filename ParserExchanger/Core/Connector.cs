@@ -93,7 +93,7 @@ namespace YouTrackHubExchanger
 
             bufferBody = JObject.Parse(content);
             widgetID = bufferBody.SelectToken(string.Format(@"$.data.widgets[?(@.config.id=='{0}')].config.message", (string)jInput["YTwidget"]));
-            if (widgetID.ToString().Length == 0) throw new System.ArgumentException("Parameter cannot be null", "widgetID.ToString().Length");
+            if (widgetID.ToString().Length == 0) throw new ArgumentException("Parameter cannot be null", "widgetID.ToString().Length");
             Console.WriteLine("YOUTRACK GET: done");
         }
 
@@ -179,19 +179,21 @@ namespace YouTrackHubExchanger
             StringBuilder markdownContent = new StringBuilder();
             foreach (JObject disassemb0 in exchangeListout)
             {
-                markdownContent.AppendLine("### " + disassemb0["Vendor"] + "\n");
+                markdownContent.Append("### " + disassemb0["Vendor"] + "\n\n");
                 foreach (JObject disassemb1 in disassemb0["Models"])
                 {
                     markdownContent.Append(string.Format(@"+ [{0}]({1})", disassemb1["Model"], disassemb1["Url"]));
-                    if (disassemb1["FW"].ToString() != "") markdownContent.AppendLine(@" - " + disassemb1["FW"]);
-                    else if (!(disassemb1 == disassemb0["Models"].Last)) markdownContent.AppendLine();
-                    if ((disassemb1 == disassemb0["Models"].Last) && (!(disassemb0 == exchangeListout.Last))) markdownContent.AppendLine();
+                    if (disassemb1["FW"].ToString() != "") markdownContent.Append(@" - " + disassemb1["FW"] + "\n");
+                    else if (!(disassemb1 == disassemb0["Models"].Last)) markdownContent.Append("\n");
+                    if ((disassemb1 == disassemb0["Models"].Last) && (!(disassemb0 == exchangeListout.Last))) markdownContent.Append("\n");
                 }
-                if (!(disassemb0 == exchangeListout.Last)) markdownContent.AppendLine();
+                if (!(disassemb0 == exchangeListout.Last)) markdownContent.Append("\n");
 
             }
 
             widgetID = markdownContent.ToString();
+            
+            if (widgetID.ToString().Length == 0) throw new ArgumentException("Parameter cannot be null", "widgetID.ToString().Length");
             Console.WriteLine("Markdown serialized: done");
         }
 
@@ -200,6 +202,7 @@ namespace YouTrackHubExchanger
             bufferBody.SelectToken(string.Format(@"$.data.widgets[?(@.config.id=='{0}')].config.message", (string)jInput["YTwidget"])).Replace(widgetID);
             var request = new RestRequest(Method.POST);
             request.AddHeader("Accept", "application/json");
+            if (bufferBody.ToString().Length == 0) throw new ArgumentException("Parameter cannot be null", "bufferBody.ToString().Length == 0");
             request.AddParameter("application/json", bufferBody.ToString(), ParameterType.RequestBody);
             var response = client.Execute(request);
             var content = response.Content;
