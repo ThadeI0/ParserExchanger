@@ -93,6 +93,7 @@ namespace YouTrackHubExchanger
 
             bufferBody = JObject.Parse(content);
             widgetID = bufferBody.SelectToken(string.Format(@"$.data.widgets[?(@.config.id=='{0}')].config.message", (string)jInput["YTwidget"]));
+            if (widgetID.ToString().Length == 0) throw new System.ArgumentException("Parameter cannot be null", "widgetID.ToString().Length");
             Console.WriteLine("YOUTRACK GET: done");
         }
 
