@@ -19,7 +19,7 @@ namespace YouTrackHubExchanger
         public dynamic exchangeList = new JArray();
         private dynamic exchangeListout = new JArray();
         private string jsonInput;
-        private JObject jInput; 
+        private JObject jInput;
         private RestClient client;
 
         public string Linemodel(string line)
@@ -39,10 +39,10 @@ namespace YouTrackHubExchanger
         {
             try
             {
-                StreamReader file = new StreamReader(@"..\..\..\data\" + Linemodel(model) + ".html");
-                string HTML = file.ReadToEnd(); 
-                
-                return HTML; 
+                StreamReader file = new StreamReader(@"data\" + Linemodel(model) + ".html");
+                string HTML = file.ReadToEnd();
+
+                return HTML;
             }
             catch (FileNotFoundException e)
             {
@@ -70,7 +70,7 @@ namespace YouTrackHubExchanger
         {
             try
             {
-                jsonInput = File.ReadAllText(@"..\..\..\Inputdata\YouTrackInput.json");
+                jsonInput = File.ReadAllText(@"YouTrackInput.json");
                 Console.WriteLine("Params read: done");
             }
             catch (FileNotFoundException e)
@@ -82,7 +82,7 @@ namespace YouTrackHubExchanger
         public void YouTrackConnect()
         {
             jInput = JObject.Parse(jsonInput);
-            
+
             client = new RestClient((string)jInput["YTurl"] + "/" + (string)jInput["YTdashboard"]);
             client.Authenticator = new JwtAuthenticator((string)jInput["YTtoken"]);
             var request = new RestRequest(Method.GET);
@@ -98,7 +98,7 @@ namespace YouTrackHubExchanger
 
         public void MarkdownDeserializer()
         {
-            
+
             dynamic tempProduct = null;
             dynamic tempProduct2 = null;
             string widgetMessage = widgetID.ToString(); //
@@ -128,11 +128,12 @@ namespace YouTrackHubExchanger
                     modelList.Add(tempProduct);
 
 
-                    string path = @"..\..\..\data\" + Linemodel(m2.Groups["model"].ToString()) + ".html";
+                    string path = @"data\" + Linemodel(m2.Groups["model"].ToString()) + ".html";
                     if (!File.Exists((path)))
                     {
+                        Directory.CreateDirectory(@"data\");
                         CreateHTMLFILE(DownloadHTML(m2.Groups["url"].ToString()), path);
-                        
+
                     }
                     var htmlText = ReadHTMLFILE(m2.Groups["model"].ToString());
 
@@ -151,9 +152,9 @@ namespace YouTrackHubExchanger
                         break;
                     }
 
-                    
-                    
-                    
+
+
+
                     modelList2.Add(tempProduct);
                 }
                 products.Add("Models", modelList);
@@ -161,7 +162,7 @@ namespace YouTrackHubExchanger
                 products2.Add("Models", modelList);
                 exchangeListout.Add(products);
             }
-            
+
             Console.WriteLine("Markdown deserialized: done");
         }
         //
@@ -181,10 +182,10 @@ namespace YouTrackHubExchanger
                     markdownContent.Append(string.Format(@"+ [{0}]({1})", disassemb1["Model"], disassemb1["Url"]));
                     if (disassemb1["FW"].ToString() != "") markdownContent.AppendLine(@" - " + disassemb1["FW"]);
                     else if (!(disassemb1 == disassemb0["Models"].Last)) markdownContent.AppendLine();
-                    if ((disassemb1 == disassemb0["Models"].Last) && (!(disassemb0 == exchangeListout.Last))) markdownContent.AppendLine();     
+                    if ((disassemb1 == disassemb0["Models"].Last) && (!(disassemb0 == exchangeListout.Last))) markdownContent.AppendLine();
                 }
                 if (!(disassemb0 == exchangeListout.Last)) markdownContent.AppendLine();
-                
+
             }
             //markdownContent.Append("Здесь был Жура");// - проверка работоспособности post запроса убрать в релизе
             widgetID = markdownContent.ToString();
@@ -195,7 +196,7 @@ namespace YouTrackHubExchanger
         {
             bufferBody.SelectToken(string.Format(@"$.data.widgets[?(@.config.id=='{0}')].config.message", (string)jInput["YTwidget"])).Replace(widgetID);
             var request = new RestRequest(Method.POST);
-            request.AddHeader("Accept", "application/json");           
+            request.AddHeader("Accept", "application/json");
             request.AddParameter("application/json", bufferBody.ToString(), ParameterType.RequestBody);
             var response = client.Execute(request);
             var content = response.Content;

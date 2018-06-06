@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27703.2000
+VisualStudioVersion = 15.0.27703.2026
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParserExchanger", "ParserExchanger\ParserExchanger.csproj", "{F7A18768-7462-4340-B2EB-AF1A17582386}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParserExchanger", "ParserExchanger\ParserExchanger.csproj", "{723EDE61-72EB-4282-A247-4CF467784B3F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F7A18768-7462-4340-B2EB-AF1A17582386}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F7A18768-7462-4340-B2EB-AF1A17582386}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F7A18768-7462-4340-B2EB-AF1A17582386}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F7A18768-7462-4340-B2EB-AF1A17582386}.Release|Any CPU.Build.0 = Release|Any CPU
+		{723EDE61-72EB-4282-A247-4CF467784B3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{723EDE61-72EB-4282-A247-4CF467784B3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{723EDE61-72EB-4282-A247-4CF467784B3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{723EDE61-72EB-4282-A247-4CF467784B3F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {0D7EB55F-C27F-42E4-AB99-2BD9A485D67F}
+		SolutionGuid = {65F6D2D9-63EA-4E7B-A17A-638FB92F4F36}
 	EndGlobalSection
 EndGlobal
