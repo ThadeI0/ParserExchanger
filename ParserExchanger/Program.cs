@@ -6,11 +6,8 @@ namespace ParserExchanger
     class Program
     { 
         static void Main(string[] args)
-        {
-            
+        {           
             Connector connector = new Connector();  
-            
-
             connector.YouTrackRestParams();
             connector.YouTrackConnect();
             connector.MarkdownDeserializer();
