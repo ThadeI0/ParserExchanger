@@ -39,7 +39,7 @@ namespace YouTrackHubExchanger
         {
             try
             {
-                StreamReader file = new StreamReader(@"data\" + Linemodel(model) + ".html");
+                StreamReader file = new StreamReader(Path.Combine(@"data", Linemodel(model) + ".html"));
                 string HTML = file.ReadToEnd();
 
                 return HTML;
@@ -128,10 +128,12 @@ namespace YouTrackHubExchanger
                     modelList.Add(tempProduct);
 
 
-                    string path = @"data\" + Linemodel(m2.Groups["model"].ToString()) + ".html";
+                    string path = Path.Combine(@"data", Linemodel(m2.Groups["model"].ToString()) + ".html");
+
                     if (!File.Exists((path)))
                     {
-                        Directory.CreateDirectory(@"data\");
+                        
+                        Directory.CreateDirectory(@"data");
                         CreateHTMLFILE(DownloadHTML(m2.Groups["url"].ToString()), path);
 
                     }
