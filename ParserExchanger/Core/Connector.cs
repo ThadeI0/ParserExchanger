@@ -187,7 +187,7 @@ namespace YouTrackHubExchanger
                 if (!(disassemb0 == exchangeListout.Last)) markdownContent.AppendLine();
 
             }
-            //markdownContent.Append("Здесь был Жура");// - проверка работоспособности post запроса убрать в релизе
+
             widgetID = markdownContent.ToString();
             Console.WriteLine("Markdown serialized: done");
         }
