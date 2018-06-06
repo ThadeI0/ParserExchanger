@@ -39,7 +39,7 @@ namespace YouTrackHubExchanger
         {
             try
             {
-                StreamReader file = new StreamReader(@"..\..\..\data\" + Linemodel(model) + ".html");
+                StreamReader file = new StreamReader(@"data\" + Linemodel(model) + ".html");
                 string HTML = file.ReadToEnd();
 
                 return HTML;
@@ -70,7 +70,7 @@ namespace YouTrackHubExchanger
         {
             try
             {
-                jsonInput = File.ReadAllText(@"..\..\..\Inputdata\YouTrackInput.json");
+                jsonInput = File.ReadAllText(@"YouTrackInput.json");
                 Console.WriteLine("Params read: done");
             }
             catch (FileNotFoundException e)
@@ -128,9 +128,10 @@ namespace YouTrackHubExchanger
                     modelList.Add(tempProduct);
 
 
-                    string path = @"..\..\..\data\" + Linemodel(m2.Groups["model"].ToString()) + ".html";
+                    string path = @"data\" + Linemodel(m2.Groups["model"].ToString()) + ".html";
                     if (!File.Exists((path)))
                     {
+                        Directory.CreateDirectory(@"data\");
                         CreateHTMLFILE(DownloadHTML(m2.Groups["url"].ToString()), path);
 
                     }
