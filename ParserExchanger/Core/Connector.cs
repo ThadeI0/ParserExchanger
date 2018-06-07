@@ -146,24 +146,25 @@ namespace YouTrackHubExchanger
                     var SelAlla = document.QuerySelectorAll("a[href*='Firmware']");
                     tempProduct2 = new JObject();
                     tempProduct2.Model = m2.Groups["model"].ToString();
+                    tempProduct2.Url = m2.Groups["url"].ToString();
 
                     foreach (var item in SelAlla)
                     {
-                        tempProduct2.Url = item.GetAttribute("href");
-                        tempProduct2.FW = item.Text();
-
+                        
+                        tempProduct2.FW = string.Format("[{0}]({1})", item.Text(), item.GetAttribute("href"));
+                        
                         break;
                     }
 
 
 
-
-                    modelList2.Add(tempProduct);
+                    modelList.Add(tempProduct);
+                    modelList2.Add(tempProduct2);
                 }
                 products.Add("Models", modelList);
                 exchangeList.Add(products);
-                products2.Add("Models", modelList);
-                exchangeListout.Add(products);
+                products2.Add("Models", modelList2);
+                exchangeListout.Add(products2);
             }
 
             Console.WriteLine("Markdown deserialized: done");
@@ -183,7 +184,8 @@ namespace YouTrackHubExchanger
                 foreach (JObject disassemb1 in disassemb0["Models"])
                 {
                     markdownContent.Append(string.Format(@"+ [{0}]({1})", disassemb1["Model"], disassemb1["Url"]));
-                    if (disassemb1["FW"].ToString() != "") markdownContent.Append(@" - " + disassemb1["FW"] + "\n");
+                    if (disassemb1["FW"] == null) markdownContent.Append(@" - " + "[свежих прошивок нет](#\"\")" + "\n");
+                    else if (disassemb1["FW"].ToString() != "") markdownContent.Append(@" - " + disassemb1["FW"] + "\n");
                     else if (!(disassemb1 == disassemb0["Models"].Last)) markdownContent.Append("\n");
                     if ((disassemb1 == disassemb0["Models"].Last) && (!(disassemb0 == exchangeListout.Last))) markdownContent.Append("\n");
                 }
