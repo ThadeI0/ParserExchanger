@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Web;
 using System.Text.RegularExpressions;
 using RestSharp;
 using RestSharp.Authenticators;
@@ -106,6 +107,7 @@ namespace YouTrackHubExchanger
             Regex regex = new Regex(@"### (?<vendor>\w+)\n\n(?<models>(?:^\+.*$\n?)+)", RegexOptions.Multiline);
             MatchCollection matches = regex.Matches(widgetMessage);
             Regex regex2 = new Regex(@"^\+ \[(?<model>\S+)\]\((?<url>\S+)\)(?: - (?<fw>.+))?$", RegexOptions.Multiline);
+            Regex regex3 = new Regex(@"(?<ver>\d+\.\d+\.[BR]\d+)(?: от (?<date>\d+\.\d+\.\d+)(?: \(.+(?<rev>[ABCD]\d(?:\/[ABCD]\d)?)\))?)?$", RegexOptions.Multiline);
 
             foreach (Match m in matches)
             {
@@ -147,15 +149,27 @@ namespace YouTrackHubExchanger
                     tempProduct2 = new JObject();
                     tempProduct2.Model = m2.Groups["model"].ToString();
                     tempProduct2.Url = m2.Groups["url"].ToString();
-
+                    int counter = 0;
+                    string fwBody = "";
                     foreach (var item in SelAlla)
                     {
-                        
-                        tempProduct2.FW = string.Format("[{0}]({1})", item.Text(), item.GetAttribute("href"));
-                        
-                        break;
-                    }
+                        if (counter > 3) break;
+                        MatchCollection matches3 = regex3.Matches(item.Text());
+                        if (matches3.Count != 0)
+                        {
+                            foreach (Match m3 in matches3)
+                            {
+                                fwBody = fwBody + string.Format("[{0} {1}]({2} \"{3}\")",  m3.Groups["ver"].ToString(), m3.Groups["rev"].ToString(), m3.Groups["date"], HttpUtility.UrlEncode(item.GetAttribute("href")));
+                                if (true) fwBody = fwBody + ", ";
+                            }
 
+                        }
+                        else tempProduct2.FW = string.Format("[{0}]({1})", item.Text(), item.GetAttribute("href"));
+          
+                        counter++;
+                        
+                    }
+                    tempProduct2.FW = fwBody;
 
 
                     modelList.Add(tempProduct);
