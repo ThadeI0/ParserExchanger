@@ -106,7 +106,7 @@ namespace YouTrackHubExchanger
             string widgetMessage = widgetID.ToString(); //
             Regex regex = new Regex(@"### (?<vendor>\w+)\n\n(?<models>(?:^\+.*$\n?)+)", RegexOptions.Multiline);
             MatchCollection matches = regex.Matches(widgetMessage);
-            Regex regex2 = new Regex(@"^\+ \[(?<model>\S+)\]\((?<url>\S+)\)(?: - (?<fw>.+))?$", RegexOptions.Multiline);
+            Regex regex2 = new Regex(@"^\+ \[(?<model>\S+)\]\((?<url>\S+)\)(?: - (?<fw>.+)?)?$", RegexOptions.Multiline);
             Regex regex3 = new Regex(@"(?<ver>\d+\.\d+\.[BR]\d+)(?: от (?<date>\d+\.\d+\.\d+)(?: \(.+(?<rev>[ABCD]\d(?:\/[ABCD]\d)?)\))?)?$", RegexOptions.Multiline);
 
             foreach (Match m in matches)
@@ -146,45 +146,51 @@ namespace YouTrackHubExchanger
                     var parser = new HtmlParser();
                     var document = parser.Parse(htmlText.ToString());
                     //var SelAlla = document.QuerySelectorAll("a[href*='Firmware']");
-                    var SelAlla = document.QuerySelectorAll("a[href*='Firmware']a:not([href$='.doc'])");
+                    var SelAlla = document.QuerySelectorAll("a[href*='Firmware']a:not([href$='.doc'])a:not([href$='.pdf'])");
                     tempProduct2 = new JObject();
                     tempProduct2.Model = m2.Groups["model"].ToString();
                     tempProduct2.Url = m2.Groups["url"].ToString();
-                    int counter = (SelAlla.Length > 3) ? 4 : SelAlla.Length;
                     string fwBody = "";
-                    foreach (var item in SelAlla)
+                    if (SelAlla.Length == 0)
+                        fwBody = m2.Groups["fw"].ToString();
+                    else
                     {
-                        if (counter == 0) break;
-                        MatchCollection matches3 = regex3.Matches(item.Text());
-                        if (matches3.Count != 0)
+                        int counter = (SelAlla.Length > 3) ? 4 : SelAlla.Length;
+
+                        foreach (var item in SelAlla)
                         {
-                            
-                            foreach (Match m3 in matches3)
+                            if (counter == 0) break;
+                            MatchCollection matches3 = regex3.Matches(item.Text());
+                            if (matches3.Count != 0)
                             {
-                                if (m3.Groups["rev"].ToString() != "")
+
+                                foreach (Match m3 in matches3)
                                 {
-                                    fwBody = fwBody + string.Format("[{0} {1}]({2} \"{3}\")", m3.Groups["ver"].ToString(), m3.Groups["rev"].ToString(), item.GetAttribute("href"), m3.Groups["date"]);
+                                    if (m3.Groups["rev"].ToString() != "")
+                                    {
+                                        fwBody = fwBody + string.Format("[{0} {1}]({2} \"{3}\")", m3.Groups["ver"].ToString(), m3.Groups["rev"].ToString(), item.GetAttribute("href"), m3.Groups["date"]);
+                                    }
+                                    else
+                                    {
+                                        fwBody = fwBody + string.Format("[{0}]({1} \"{2}\")", m3.Groups["ver"].ToString(), item.GetAttribute("href"), m3.Groups["date"]);
+                                    }
+                                    if (counter > 1)
+                                    {
+                                        fwBody = fwBody + ", ";
+                                    }
                                 }
-                                else
-                                {
-                                    fwBody = fwBody + string.Format("[{0}]({1} \"{2}\")", m3.Groups["ver"].ToString(), item.GetAttribute("href"), m3.Groups["date"]);
-                                }
-                                if (counter > 1)
-                                {
-                                    fwBody = fwBody + ", ";
-                                }
+
                             }
+                            else if ((matches3.Count == 0) && !(SelAlla.Length == 0))
+                            {
+                                fwBody = string.Format("[{0}]({1})", item.Text(), item.GetAttribute("href"));
+                            }
+                            counter--;
 
                         }
-                        //if (true)
-                        //{
-                        //    tempProduct2.FW = string.Format("[{0}]({1})", item.Text(), item.GetAttribute("href"));
-                        //}
-                        counter--;
-                        
                     }
-                    tempProduct2.FW = fwBody;
-
+                        tempProduct2.FW = fwBody;
+                    
 
                     modelList.Add(tempProduct);
                     modelList2.Add(tempProduct2);
