@@ -2,7 +2,6 @@
 using System.IO;
 using System.Net;
 using System.Text;
-using System.Web;
 using System.Text.RegularExpressions;
 using RestSharp;
 using RestSharp.Authenticators;
@@ -107,6 +106,7 @@ namespace YouTrackHubExchanger
             Regex regex = new Regex(@"### (?<vendor>\w+)\n\n(?<models>(?:^\+.*$\n?)+)", RegexOptions.Multiline);
             MatchCollection matches = regex.Matches(widgetMessage);
             Regex regex2 = new Regex(@"^\+ \[(?<model>\S+)\]\((?<url>\S+)\)(?: - (?<fw>.+)?)?$", RegexOptions.Multiline);
+            Regex preregex3 = new Regex(@"^Программное обеспечение версии ");
             Regex regex3 = new Regex(@"(?<ver>\d+\.\d+\.[BR]\d+)(?: от (?<date>\d+\.\d+\.\d+)(?: \(.+(?<rev>[ABCD]\d(?:\/[ABCD]\d)?)\))?)?$", RegexOptions.Multiline);
 
             foreach (Match m in matches)
@@ -160,7 +160,8 @@ namespace YouTrackHubExchanger
                         foreach (var item in SelAlla)
                         {
                             if (counter == 0) break;
-                            MatchCollection matches3 = regex3.Matches(item.Text());
+                            string result = preregex3.Replace(item.Text(), "");
+                            MatchCollection matches3 = regex3.Matches(result);
                             if (matches3.Count != 0)
                             {
 
@@ -183,7 +184,8 @@ namespace YouTrackHubExchanger
                             }
                             else if ((matches3.Count == 0) && !(SelAlla.Length == 0))
                             {
-                                fwBody = string.Format("[{0}]({1})", item.Text(), item.GetAttribute("href"));
+                                fwBody = string.Format("[{0}]({1})", result, item.GetAttribute("href"));
+                                if (counter > 1) fwBody = fwBody + ", ";
                             }
                             counter--;
 
