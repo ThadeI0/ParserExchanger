@@ -8,4 +8,4 @@ RUN dotnet restore
 # copy and build everything else
 COPY . ./
 RUN dotnet publish -c Release
-ENTRYPOINT ["dotnet", "ParserExchanger.dll"]
+ENTRYPOINT ["dotnet", "publish/ParserExchanger.dll"]
