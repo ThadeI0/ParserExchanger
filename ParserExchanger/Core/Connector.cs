@@ -71,7 +71,6 @@ namespace YouTrackHubExchanger
             try
             {
                 jsonInput = File.ReadAllText(@"YouTrackInput.json");
-                Console.WriteLine("Youtrack params: " + jsonInput);
                 Console.WriteLine("Params read: done");
             }
             catch (FileNotFoundException e)
@@ -82,17 +81,13 @@ namespace YouTrackHubExchanger
 
         public void YouTrackConnect()
         {
-            jInput = JObject.Parse(jsonInput);
-            
-            client = new RestClient((string)jInput["YTurl"] + "/" + (string)jInput["YTdashboard"]);
-            
+            jInput = JObject.Parse(jsonInput);       
+            client = new RestClient((string)jInput["YTurl"] + "/" + (string)jInput["YTdashboard"]);           
             client.Authenticator = new JwtAuthenticator((string)jInput["YTtoken"]);
             var request = new RestRequest(Method.GET);
             request.AddHeader("Accept", "application/json");
-
             IRestResponse response = client.Execute(request);
-            var content = response.Content;
-            
+            var content = response.Content;          
             bufferBody = JObject.Parse(content);
             widgetID = bufferBody.SelectToken(string.Format(@"$.data.widgets[?(@.config.id=='{0}')].config.message", (string)jInput["YTwidget"]));
             if (widgetID.ToString().Length == 0) throw new ArgumentException("Parameter cannot be null", "widgetID.ToString().Length");
