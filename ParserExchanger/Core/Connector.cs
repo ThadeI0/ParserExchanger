@@ -83,7 +83,7 @@ namespace YouTrackHubExchanger
         public void YouTrackConnect()
         {
             jInput = JObject.Parse(jsonInput);
-
+            Console.WriteLine(jInput.ToString());
             client = new RestClient((string)jInput["YTurl"] + "/" + (string)jInput["YTdashboard"]);
             client.Authenticator = new JwtAuthenticator((string)jInput["YTtoken"]);
             var request = new RestRequest(Method.GET);
@@ -91,7 +91,7 @@ namespace YouTrackHubExchanger
 
             IRestResponse response = client.Execute(request);
             var content = response.Content;
-
+            Console.WriteLine(content.ToString());
             bufferBody = JObject.Parse(content);
             widgetID = bufferBody.SelectToken(string.Format(@"$.data.widgets[?(@.config.id=='{0}')].config.message", (string)jInput["YTwidget"]));
             if (widgetID.ToString().Length == 0) throw new ArgumentException("Parameter cannot be null", "widgetID.ToString().Length");
