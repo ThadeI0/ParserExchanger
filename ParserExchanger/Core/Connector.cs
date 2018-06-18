@@ -71,6 +71,7 @@ namespace YouTrackHubExchanger
             try
             {
                 jsonInput = File.ReadAllText(@"YouTrackInput.json");
+                Console.WriteLine("Youtrack params: " + jsonInput);
                 Console.WriteLine("Params read: done");
             }
             catch (FileNotFoundException e)
