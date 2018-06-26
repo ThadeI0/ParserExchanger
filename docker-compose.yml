@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  parserexchanger:
+    image: ${DOCKER_REGISTRY}parserexchanger
+    build:
+      context: .
+      dockerfile: ParserExchanger/Dockerfile

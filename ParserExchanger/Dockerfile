@@ -1,11 +1,18 @@
-FROM microsoft/dotnet:2.1-sdk
+FROM microsoft/dotnet:2.1-runtime AS base
 WORKDIR /app
 
-# copy csproj and restore as distinct layers
-COPY *.csproj ./
-RUN dotnet restore
+FROM microsoft/dotnet:2.1-sdk AS build
+WORKDIR /src
+COPY ParserExchanger/ParserExchanger.csproj ParserExchanger/
+RUN dotnet restore ParserExchanger/ParserExchanger.csproj
+COPY . .
+WORKDIR /src/ParserExchanger
+RUN dotnet build ParserExchanger.csproj -c Release -o /app
 
-# copy and build everything else
-COPY . ./
-RUN dotnet publish -c Release -o out
-ENTRYPOINT ["dotnet", "out/ParserExchanger.dll"]
+FROM build AS publish
+RUN dotnet publish ParserExchanger.csproj -c Release -o /app
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app .
+ENTRYPOINT ["dotnet", "ParserExchanger.dll"]
