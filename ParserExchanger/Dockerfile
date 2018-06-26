@@ -12,6 +12,8 @@ RUN dotnet build ParserExchanger.csproj -c Release -o /app
 
 FROM build AS publish
 RUN dotnet publish ParserExchanger.csproj -c Release -o /app
+WORKDIR /src
+COPY ParserExchanger/YouTrackInput.json /app
 
 FROM base AS final
 WORKDIR /app
