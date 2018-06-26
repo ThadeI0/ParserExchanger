@@ -5,6 +5,7 @@ FROM microsoft/dotnet:2.1-sdk AS build
 WORKDIR /src
 COPY ParserExchanger/ParserExchanger.csproj ParserExchanger/
 RUN dotnet restore ParserExchanger/ParserExchanger.csproj
+COPY ParserExchanger/YouTrackInput.json ParserExchanger/
 COPY . .
 WORKDIR /src/ParserExchanger
 RUN dotnet build ParserExchanger.csproj -c Release -o /app
