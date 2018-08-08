@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+//using System.Security.Cryptography;
 using RestSharp;
 using RestSharp.Authenticators;
 using AngleSharp.Extensions;
@@ -52,12 +53,27 @@ namespace YouTrackHubExchanger
             }
         }
 
-        public void CreateHTMLFILE(string HTML, string path)
-        {
-            StreamWriter file = new StreamWriter(path);
-            file.WriteLine(HTML);
-            file.Close();
-        }
+        //public static byte[] GetHash(string inputString)
+        //{
+        //    HashAlgorithm algorithm = MD5.Create();
+        //    return algorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));
+        //}
+
+        //public static string GetHashString(string inputString)
+        //{
+        //    StringBuilder sb = new StringBuilder();
+        //    foreach (byte b in GetHash(inputString))
+        //        sb.Append(b.ToString());
+
+        //    return sb.ToString();
+        //}
+
+        //public void CreateHTMLFILE(string HTML, string path)
+        //{
+        //    StreamWriter file = new StreamWriter(path);
+        //    file.WriteLine(HTML);
+        //    file.Close();
+        //}
 
         public string DownloadHTML(string url)
         {
@@ -130,15 +146,7 @@ namespace YouTrackHubExchanger
 
                     string path = Path.Combine(@"data", Linemodel(m2.Groups["model"].ToString()) + ".html");
 
-                    if (!File.Exists((path)))
-                    {
-                        
-                        Directory.CreateDirectory(@"data");
-                        CreateHTMLFILE(DownloadHTML(m2.Groups["url"].ToString()), path);
-
-                    }
-                    var htmlText = ReadHTMLFILE(m2.Groups["model"].ToString());
-
+                    string htmlText = DownloadHTML(m2.Groups["url"].ToString());
 
                     var parser = new HtmlParser();
                     var document = parser.Parse(htmlText.ToString());
