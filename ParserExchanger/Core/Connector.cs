@@ -65,12 +65,14 @@ namespace YouTrackHubExchanger
             }
             catch(WebException e)
             {
-                Console.WriteLine("\r\nWebExpetion: {0}", e.Status);
+                Console.WriteLine("\nWebExpetion: {0}", e);
+                Environment.Exit(0);
                 return "";
             }
             catch(Exception e)
             {
-                Console.WriteLine("\nException: {0}", e.Message);
+                Console.WriteLine("\nException: {0}", e);
+                Environment.Exit(0);
                 return "";
             }
         }
@@ -97,6 +99,8 @@ namespace YouTrackHubExchanger
 
         public void YouTrackConnect()
         {
+            try
+            {
             jInput = JObject.Parse(jsonInput);
             client = new RestClient((string)jInput["YTurl"] + "/" + (string)jInput["YTdashboard"]);
             client.Authenticator = new JwtAuthenticator((string)jInput["YTtoken"]);
@@ -108,6 +112,15 @@ namespace YouTrackHubExchanger
             widgetID = bufferBody.SelectToken(string.Format(@"$.data.widgets[?(@.config.id=='{0}')].config.message", (string)jInput["YTwidget"]));
             if (widgetID.ToString().Length == 0) throw new ArgumentException("Parameter cannot be null", "widgetID.ToString().Length");
             Console.WriteLine("YOUTRACK GET: done");
+            }
+            catch (WebException e)
+            {
+                Console.WriteLine("WebException: {0}", e);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception: {0}", e);
+            }
         }
 
         public void MarkdownDeserializer()
@@ -256,14 +269,25 @@ namespace YouTrackHubExchanger
 
         public void YoutrackConnectPost()
         {
-            bufferBody.SelectToken(string.Format(@"$.data.widgets[?(@.config.id=='{0}')].config.message", (string)jInput["YTwidget"])).Replace(widgetID);
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("Accept", "application/json");
-            if (bufferBody.ToString().Length == 0) throw new ArgumentException("Parameter cannot be null", "bufferBody.ToString().Length == 0");
-            request.AddParameter("application/json", bufferBody.ToString(), ParameterType.RequestBody);
-            var response = client.Execute(request);
-            var content = response.Content;
-            Console.WriteLine("YOUTRACK POST: Done");
+            try
+            {
+                bufferBody.SelectToken(string.Format(@"$.data.widgets[?(@.config.id=='{0}')].config.message", (string)jInput["YTwidget"])).Replace(widgetID);
+                var request = new RestRequest(Method.POST);
+                request.AddHeader("Accept", "application/json");
+                if (bufferBody.ToString().Length == 0) throw new ArgumentException("Parameter cannot be null", "bufferBody.ToString().Length == 0");
+                request.AddParameter("application/json", bufferBody.ToString(), ParameterType.RequestBody);
+                var response = client.Execute(request);
+                var content = response.Content;
+                Console.WriteLine("YOUTRACK POST: Done");
+            }
+            catch(WebException e)
+            {
+                Console.WriteLine("WebException: {0}", e);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception: {0}", e);
+            }
         }
     }
 }
