@@ -277,16 +277,20 @@ namespace YouTrackHubExchanger
                 if (bufferBody.ToString().Length == 0) throw new ArgumentException("Parameter cannot be null", "bufferBody.ToString().Length == 0");
                 request.AddParameter("application/json", bufferBody.ToString(), ParameterType.RequestBody);
                 var response = client.Execute(request);
+                if (response.StatusCode != HttpStatusCode.OK) throw new WebException(response.Content);
                 var content = response.Content;
+                
                 Console.WriteLine("YOUTRACK POST: Done");
             }
             catch(WebException e)
             {
                 Console.WriteLine("WebException: {0}", e);
+                Environment.Exit(0);
             }
             catch (Exception e)
             {
                 Console.WriteLine("Exception: {0}", e);
+                Environment.Exit(0);
             }
         }
     }
