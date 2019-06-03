@@ -222,7 +222,7 @@ namespace YouTrackHubExchanger
                         tempProduct2 = new JObject();
                         tempProduct2.Model = m2.Groups["model"].ToString();
                         tempProduct2.Url = m2.Groups["url"].ToString();
-                        string hrefEltex = "https://eltex-co.ru" + matches4[0].Groups[1].Value.ToString();
+                        string hrefEltex = string.Format("https://eltex-co.ru" + matches4[0].Groups[1].Value.ToString());
                         string fwBody = string.Format("[{0}]({1} \"{2}\")", matches4[0].Groups[2].Value.ToString(), hrefEltex, HeaderRequest(hrefEltex));
                         tempProduct2.FW = fwBody;
                     }
