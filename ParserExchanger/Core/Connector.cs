@@ -21,7 +21,7 @@ namespace YouTrackHubExchanger
         private string jsonInput;
         private JObject jInput;
         private RestClient client;
-        private DateTime dt = new DateTime();
+        private DateTime dt = DateTime.Now;
 
         public string Linemodel(string line)
         {
@@ -217,14 +217,23 @@ namespace YouTrackHubExchanger
                     }
                     else
                     {
-                        Regex regex4 = new Regex("href=\"(?:https?://eltex-co.ru)?(/upload/iblock/[a-zA-Z0-9./-]+(?:mes|smg2016_firmware_)[a-zA-Z0-9./-]+)\".+<span>Версия ПО ([0-9.]+)</span>", RegexOptions.Singleline);
+                        Regex regex4 = new Regex("(?>href=\")(?:https?://eltex-co.ru)?(/upload/iblock/[a-zA-Z0-9./-]+)+(mes[a-zA-Z0-9./]+-|smg2016_firmware_)([a-zA-Z0-9./-]+)(.zip|.bin)", RegexOptions.Singleline);
                         MatchCollection matches4 = regex4.Matches(htmlText.ToString());
                         tempProduct2 = new JObject();
                         tempProduct2.Model = m2.Groups["model"].ToString();
                         tempProduct2.Url = m2.Groups["url"].ToString();
-                        string hrefEltex = string.Format("https://eltex-co.ru" + matches4[0].Groups[1].Value.ToString());
-                        string fwBody = string.Format("[{0}]({1} \"{2}\")", matches4[0].Groups[2].Value.ToString(), hrefEltex, HeaderRequest(hrefEltex));
-                        tempProduct2.FW = fwBody;
+                        if (matches4.Count != 0)
+                        {
+                            string hrefEltex = string.Format("https://eltex-co.ru" + matches4[0].Groups[1].Value.ToString() + matches4[0].Groups[2].Value.ToString() + matches4[0].Groups[3].Value.ToString() + matches4[0].Groups[4].Value.ToString());
+                            string fwBody = string.Format("[{0}]({1} \"{2}\")", matches4[0].Groups[3].Value.ToString(), hrefEltex, HeaderRequest(hrefEltex));
+                            tempProduct2.FW = fwBody;
+                        }
+                        else
+                        {
+                            string fwBody = string.Format("[{0}]({1} \"{2}\")", "", "", "");
+                            tempProduct2.FW = fwBody;
+                        }
+                      
                     }
 
                     modelList.Add(tempProduct);
@@ -273,7 +282,7 @@ namespace YouTrackHubExchanger
             try
             {
                 bufferBody.SelectToken(string.Format(@"$.data.widgets[?(@.config.id=='{0}')].config.message", (string)jInput["YTwidget"])).Replace(widgetID);
-                bufferBody.SelectToken(string.Format(@"$.data.widgets[?(@.config.id=='{0}')].config.name", dt.ToString()));
+                bufferBody.SelectToken(string.Format(@"$.data.widgets[?(@.config.id=='{0}')].config.name", (string)jInput["YTwidget"])).Replace(dt.ToString());
                 var request = new RestRequest(Method.POST);
                 request.AddHeader("Accept", "application/json");
                 if (bufferBody.ToString().Length == 0) throw new ArgumentException("Parameter cannot be null", "bufferBody.ToString().Length == 0");
