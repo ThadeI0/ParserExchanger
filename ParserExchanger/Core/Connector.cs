@@ -134,7 +134,7 @@ namespace YouTrackHubExchanger
             MatchCollection matches = regex.Matches(widgetMessage);
             Regex regex2 = new Regex(@"^\+ \[(?<model>\S+)\]\((?<url>\S+)\)(?: - (?<fw>.+)?)?$", RegexOptions.Multiline);
             Regex preregex3 = new Regex(@"^Программное обеспечение версии ");
-            Regex regex3 = new Regex(@"(?<ver>\d+\.\d+\.[BR]\d+)(?: от (?<date>\d+\.\d+\.\d+)(?: \(.+(?<rev>[ABCD]\d(?:\/[ABCD]\d)?)\))?)?$", RegexOptions.Multiline);
+            Regex regex3 = new Regex(@"(?<ver>\d+\.\d+\.[BR]\d+)(?: ?(от (?<date>\d+\.\d+\.\d+))?(?: \(?\W+(?<rev>[ABCD]\d(?:\/[ABCD]\d)?)\)?)?)?$", RegexOptions.Multiline);
 
             foreach (Match m in matches)
             {
