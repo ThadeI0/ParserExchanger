@@ -179,7 +179,7 @@ namespace YouTrackHubExchanger
                         {
                             int counter = (SelAlla.Length > 3) ? 4 : SelAlla.Length;
 
-                            foreach (var item in SelAlla.Odd())
+                            foreach (var item in SelAlla.Even())
                             {
                                 if (counter == 0) break;
                                 string result = preregex3.Replace(item.Text(), "");
