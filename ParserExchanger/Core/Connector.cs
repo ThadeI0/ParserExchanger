@@ -206,7 +206,7 @@ namespace YouTrackHubExchanger
                                 }
                                 else if ((matches3.Count == 0) && !(SelAlla.Length == 0))
                                 {
-                                    fwBody = string.Format("[{0}]({1})", result, item.GetAttribute("href"));
+                                    fwBody = fwBody + string.Format("[{0}]({1})", result, item.GetAttribute("href"));
                                     if (counter > 1) fwBody = fwBody + ", ";
                                 }
                                 counter--;
