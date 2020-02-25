@@ -168,7 +168,7 @@ namespace YouTrackHubExchanger
 
                         var parser = new HtmlParser();
                         var document = parser.Parse(htmlText.ToString());
-                        var SelAlla = document.QuerySelectorAll("a[href*='Firmware']a:not([href$='.doc'])a:not([href$='.pdf'])").Odd();
+                        var SelAlla = document.QuerySelectorAll("a[href*='Firmware']a:not([href$='.doc'])a:not([href$='.pdf'])");
                         tempProduct2 = new JObject();
                         tempProduct2.Model = m2.Groups["model"].ToString();
                         tempProduct2.Url = m2.Groups["url"].ToString();
@@ -179,7 +179,7 @@ namespace YouTrackHubExchanger
                         {
                             int counter = (SelAlla.Length > 3) ? 4 : SelAlla.Length;
 
-                            foreach (var item in SelAlla)
+                            foreach (var item in SelAlla.Odd())
                             {
                                 if (counter == 0) break;
                                 string result = preregex3.Replace(item.Text(), "");
