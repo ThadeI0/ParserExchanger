@@ -133,7 +133,7 @@ namespace YouTrackHubExchanger
             Regex regex = new Regex(@"### (?<vendor>\w+)\n\n(?<models>(?:^\+.*$\n?)+)", RegexOptions.Multiline);
             MatchCollection matches = regex.Matches(widgetMessage);
             Regex regex2 = new Regex(@"^\+ \[(?<model>\S+)\]\((?<url>\S+)\)(?: - (?<fw>.+)?)?$", RegexOptions.Multiline);
-            Regex preregex3 = new Regex(@"^Программное обеспечение версии |^Загрузить");
+            Regex preregex3 = new Regex(@"^Программное обеспечение версии ");
             Regex regex3 = new Regex(@"(?<ver>\d+\.\d+\.[BR]\d+)(?: ?(от (?<date>\d+\.\d+\.\d+))?(?: \(?\W+(?<rev>[ABCD]\d(?:\/[ABCD]\d)?)\)?)?)?$", RegexOptions.Multiline);
 
             foreach (Match m in matches)
@@ -168,7 +168,7 @@ namespace YouTrackHubExchanger
 
                         var parser = new HtmlParser();
                         var document = parser.Parse(htmlText.ToString());
-                        var SelAlla = document.QuerySelectorAll("a[href*='Firmware']a:not([href$='.doc'])a:not([href$='.pdf'])");
+                        var SelAlla = document.QuerySelectorAll("a[href*='Firmware']a:not([href$='.doc'])a:not([href$='.pdf'])").Odd();
                         tempProduct2 = new JObject();
                         tempProduct2.Model = m2.Groups["model"].ToString();
                         tempProduct2.Url = m2.Groups["url"].ToString();
