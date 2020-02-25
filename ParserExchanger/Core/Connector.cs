@@ -133,7 +133,7 @@ namespace YouTrackHubExchanger
             Regex regex = new Regex(@"### (?<vendor>\w+)\n\n(?<models>(?:^\+.*$\n?)+)", RegexOptions.Multiline);
             MatchCollection matches = regex.Matches(widgetMessage);
             Regex regex2 = new Regex(@"^\+ \[(?<model>\S+)\]\((?<url>\S+)\)(?: - (?<fw>.+)?)?$", RegexOptions.Multiline);
-            Regex preregex3 = new Regex(@"^Программное обеспечение версии ");
+            Regex preregex3 = new Regex(@"^Программное обеспечение версии |^Загрузить");
             Regex regex3 = new Regex(@"(?<ver>\d+\.\d+\.[BR]\d+)(?: ?(от (?<date>\d+\.\d+\.\d+))?(?: \(?\W+(?<rev>[ABCD]\d(?:\/[ABCD]\d)?)\)?)?)?$", RegexOptions.Multiline);
 
             foreach (Match m in matches)
