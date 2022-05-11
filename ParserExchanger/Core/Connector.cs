@@ -55,6 +55,19 @@ namespace YouTrackHubExchanger
 
         public string HeaderRequest(string uri)
         {
+            static void Disable_CertificateValidation()
+        {
+ 
+            ServicePointManager.ServerCertificateValidationCallback =
+                delegate (
+                            object s,
+                            X509Certificate certificate,
+                            X509Chain chain,
+                            SslPolicyErrors sslPolicyErrors
+                        ) {
+                            return true;
+                            };
+        }
             try
             {
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
@@ -80,6 +93,19 @@ namespace YouTrackHubExchanger
 
         public string DownloadHTML(string url)
         {
+            static void Disable_CertificateValidation()
+        {
+ 
+            ServicePointManager.ServerCertificateValidationCallback =
+                delegate (
+                            object s,
+                            X509Certificate certificate,
+                            X509Chain chain,
+                            SslPolicyErrors sslPolicyErrors
+                        ) {
+                            return true;
+                            };
+        }
             var webClient = new WebClient();
             string HTML = webClient.DownloadString(url);
             return HTML;
@@ -100,6 +126,19 @@ namespace YouTrackHubExchanger
 
         public void YouTrackConnect()
         {
+            static void Disable_CertificateValidation()
+        {
+ 
+            ServicePointManager.ServerCertificateValidationCallback =
+                delegate (
+                            object s,
+                            X509Certificate certificate,
+                            X509Chain chain,
+                            SslPolicyErrors sslPolicyErrors
+                        ) {
+                            return true;
+                            };
+        }
             try
             {
             jInput = JObject.Parse(jsonInput);
@@ -279,6 +318,19 @@ namespace YouTrackHubExchanger
 
         public void YoutrackConnectPost()
         {
+            static void Disable_CertificateValidation()
+        {
+ 
+            ServicePointManager.ServerCertificateValidationCallback =
+                delegate (
+                            object s,
+                            X509Certificate certificate,
+                            X509Chain chain,
+                            SslPolicyErrors sslPolicyErrors
+                        ) {
+                            return true;
+                            };
+        }
             try
             {
                 bufferBody.SelectToken(string.Format(@"$.data.widgets[?(@.config.id=='{0}')].config.message", (string)jInput["YTwidget"])).Replace(widgetID);
